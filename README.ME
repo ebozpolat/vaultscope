@@ -1,0 +1,64 @@
+# VaultScope
+
+**Institutional Crypto Risk & Asset Monitoring Platform**  
+VaultScope helps crypto exchanges, custodians, and fintech institutions track their wallet holdings, detect risk anomalies, and generate daily exposure reports in a secure and automated way.
+
+---
+
+## 🌐 Project Description
+
+VaultScope is a desktop-first web application built for compliance, risk, and treasury teams operating in digital asset markets. It aggregates wallet balances, calculates NAV, and monitors asset concentration and liquidity risks across multiple custodians (e.g. Fireblocks, cold wallets, MPC wallets).
+
+---
+
+## 🚀 MVP Features
+
+### ✅ Wallet Monitoring
+- Aggregate wallet data from multiple custodians
+- Real-time asset value in USD and base currency
+- Token distribution charts per entity or group
+
+### ✅ Alert System
+- Rule-based triggers (e.g. sudden drop, high exposure)
+- Multi-channel notifications (Email, Slack, Lark, Telegram)
+- Anomaly detection for suspicious movements
+
+### ✅ Daily Reporting
+- Generate daily NAV, exposure, and wallet health reports
+- Exportable in CSV/PDF format
+- Timestamped audit trail
+
+### ✅ Access Control
+- Role-based permissions (Admin, Viewer, Auditor)
+- Full activity logs for compliance
+
+---
+
+## 🏗️ Tech Stack
+
+- **Frontend**: React + Tailwind + Chart.js
+- **Backend**: Python (FastAPI)  
+- **Database**: PostgreSQL  
+- **Integrations**: Fireblocks API (mocked), Lark Bot, Telegram Bot API  
+- **Hosting**: Render / Vercel / On-prem (TBD)
+
+---
+
+## ⚙️ Local Setup (Dev)
+
+```bash
+# Clone repo
+git clone https://github.com/vaultscope/vaultscope-app.git
+cd vaultscope-app
+
+# Setup backend
+cd backend
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+uvicorn main:app --reload
+
+# Setup frontend
+cd ../frontend
+npm install
+npm run dev
