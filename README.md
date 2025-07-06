@@ -1,112 +1,107 @@
-# Flutter
+# React
 
-A modern Flutter-based mobile application utilizing the latest mobile development technologies and tools for building responsive cross-platform applications.
+A modern React-based project utilizing the latest frontend technologies and tools for building responsive web applications.
+
+## 🚀 Features
+
+- **React 18** - React version with improved rendering and concurrent features
+- **Vite** - Lightning-fast build tool and development server
+- **Redux Toolkit** - State management with simplified Redux setup
+- **TailwindCSS** - Utility-first CSS framework with extensive customization
+- **React Router v6** - Declarative routing for React applications
+- **Data Visualization** - Integrated D3.js and Recharts for powerful data visualization
+- **Form Management** - React Hook Form for efficient form handling
+- **Animation** - Framer Motion for smooth UI animations
+- **Testing** - Jest and React Testing Library setup
 
 ## 📋 Prerequisites
 
-- Flutter SDK (^3.29.2)
-- Dart SDK
-- Android Studio / VS Code with Flutter extensions
-- Android SDK / Xcode (for iOS development)
+- Node.js (v14.x or higher)
+- npm or yarn
 
 ## 🛠️ Installation
 
 1. Install dependencies:
-```bash
-flutter pub get
-```
-
-2. Run the application:
-```bash
-flutter run
-```
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
+   
+2. Start the development server:
+   ```bash
+   npm start
+   # or
+   yarn start
+   ```
 
 ## 📁 Project Structure
 
 ```
-flutter_app/
-├── android/            # Android-specific configuration
-├── ios/                # iOS-specific configuration
-├── lib/
-│   ├── core/           # Core utilities and services
-│   │   └── utils/      # Utility classes
-│   ├── presentation/   # UI screens and widgets
-│   │   └── splash_screen/ # Splash screen implementation
-│   ├── routes/         # Application routing
-│   ├── theme/          # Theme configuration
-│   ├── widgets/        # Reusable UI components
-│   └── main.dart       # Application entry point
-├── assets/             # Static assets (images, fonts, etc.)
-├── pubspec.yaml        # Project dependencies and configuration
-└── README.md           # Project documentation
+react_app/
+├── public/             # Static assets
+├── src/
+│   ├── components/     # Reusable UI components
+│   ├── pages/          # Page components
+│   ├── styles/         # Global styles and Tailwind configuration
+│   ├── App.jsx         # Main application component
+│   ├── Routes.jsx      # Application routes
+│   └── index.jsx       # Application entry point
+├── .env                # Environment variables
+├── index.html          # HTML template
+├── package.json        # Project dependencies and scripts
+├── tailwind.config.js  # Tailwind CSS configuration
+└── vite.config.js      # Vite configuration
 ```
 
 ## 🧩 Adding Routes
 
-To add new routes to the application, update the `lib/routes/app_routes.dart` file:
+To add new routes to the application, update the `Routes.jsx` file:
 
-```dart
-import 'package:flutter/material.dart';
-import 'package:package_name/presentation/home_screen/home_screen.dart';
+```jsx
+import { useRoutes } from "react-router-dom";
+import HomePage from "pages/HomePage";
+import AboutPage from "pages/AboutPage";
 
-class AppRoutes {
-  static const String initial = '/';
-  static const String home = '/home';
-
-  static Map<String, WidgetBuilder> routes = {
-    initial: (context) => const SplashScreen(),
-    home: (context) => const HomeScreen(),
+const ProjectRoutes = () => {
+  let element = useRoutes([
+    { path: "/", element: <HomePage /> },
+    { path: "/about", element: <AboutPage /> },
     // Add more routes as needed
-  }
-}
+  ]);
+
+  return element;
+};
 ```
 
-## 🎨 Theming
+## 🎨 Styling
 
-This project includes a comprehensive theming system with both light and dark themes:
+This project uses Tailwind CSS for styling. The configuration includes:
 
-```dart
-// Access the current theme
-ThemeData theme = Theme.of(context);
-
-// Use theme colors
-Color primaryColor = theme.colorScheme.primary;
-```
-
-The theme configuration includes:
-- Color schemes for light and dark modes
-- Typography styles
-- Button themes
-- Input decoration themes
-- Card and dialog themes
+- Forms plugin for form styling
+- Typography plugin for text styling
+- Aspect ratio plugin for responsive elements
+- Container queries for component-specific responsive design
+- Fluid typography for responsive text
+- Animation utilities
 
 ## 📱 Responsive Design
 
-The app is built with responsive design using the Sizer package:
+The app is built with responsive design using Tailwind CSS breakpoints.
 
-```dart
-// Example of responsive sizing
-Container(
-  width: 50.w, // 50% of screen width
-  height: 20.h, // 20% of screen height
-  child: Text('Responsive Container'),
-)
-```
+
 ## 📦 Deployment
 
 Build the application for production:
 
 ```bash
-# For Android
-flutter build apk --release
-
-# For iOS
-flutter build ios --release
+npm run build
 ```
 
 ## 🙏 Acknowledgments
+
 - Built with [Rocket.new](https://rocket.new)
-- Powered by [Flutter](https://flutter.dev) & [Dart](https://dart.dev)
-- Styled with Material Design
+- Powered by React and Vite
+- Styled with Tailwind CSS
 
 Built with ❤️ on Rocket.new
