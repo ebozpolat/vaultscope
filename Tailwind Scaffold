@@ -1,0 +1,88 @@
+// VaultScope - GitHub-Ready React + Tailwind Scaffold (Next.js)
+
+// 📁 File Structure
+
+vaultscope-ui/
+├── app/                # (if using Next.js 13+ app dir)
+│   ├── layout.tsx      # Root layout
+│   ├── page.tsx        # Default landing page (dashboard)
+│   ├── dashboard/
+│   │   └── page.tsx    # Dashboard screen
+│   ├── alarms/
+│   │   └── [id]/
+│   │       └── page.tsx  # Alarm detail screen
+│   ├── thresholds/
+│   │   └── page.tsx    # Threshold management
+├── components/
+│   ├── ChartPanel.tsx
+│   ├── AlertCard.tsx
+│   ├── NavBox.tsx
+│   ├── TabsPanel.tsx
+│   └── LayoutShell.tsx
+├── lib/
+│   └── data.ts         # Dummy price/alarm data
+├── styles/
+│   └── globals.css
+├── tailwind.config.ts
+├── postcss.config.js
+├── tsconfig.json
+├── package.json
+├── README.md
+
+// ✅ Key Packages (package.json)
+{
+  "name": "vaultscope-ui",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "13.5.4",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "recharts": "2.7.2",
+    "tailwindcss": "3.4.1"
+  },
+  "devDependencies": {
+    "autoprefixer": "10.4.14",
+    "postcss": "8.4.21",
+    "typescript": "5.3.2"
+  }
+}
+
+// 🔧 tailwind.config.ts
+export default {
+  content: ["./app/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}"],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+};
+
+// ✅ Example: ChartPanel.tsx (in components)
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+const data = [
+  { time: "10:00", BTC: 60700, ETH: 3400 },
+  { time: "10:05", BTC: 61250, ETH: 3415 },
+];
+export function ChartPanel() {
+  return (
+    <LineChart width={600} height={300} data={data}>
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis dataKey="time" />
+      <YAxis />
+      <Tooltip />
+      <Legend />
+      <Line type="monotone" dataKey="BTC" stroke="#f87171" />
+      <Line type="monotone" dataKey="ETH" stroke="#60a5fa" />
+    </LineChart>
+  );
+}
+
+// 🚀 To Get Started:
+// 1. Clone the repo
+// 2. Run: npm install
+// 3. Run: npm run dev
