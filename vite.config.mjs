@@ -13,9 +13,10 @@ export default defineConfig({
   },
   plugins: [tsconfigPaths(), react(), tagger()],
   server: {
-    port: "4028",
+    // Use the default Vite port and allow automatic fallback if it's busy
+    port: 5173,
     host: "0.0.0.0",
-    strictPort: true,
+    strictPort: false,
     allowedHosts: ['.amazonaws.com', '.builtwithrocket.new']
   }
 });
