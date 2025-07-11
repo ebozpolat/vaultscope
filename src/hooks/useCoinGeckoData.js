@@ -1,14 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getMarketData, getHistoricalPrices, getGlobalMarketData, transformCoinGeckoData } from '../services/coingeckoApi';
+import { getMarketData, getGlobalMarketData, checkConnection } from '../services/coingeckoApi';
 
-// Custom hook for fetching current cryptocurrency prices with static data
-export const useCoinPrices = (coinIds = ['bitcoin', 'ethereum', 'cardano', 'solana'], refreshInterval = 30000) => {
+// Custom hook for fetching real-time cryptocurrency prices from CoinGecko
+export const useCoinGeckoData = (coinIds = ['bitcoin', 'ethereum', 'cardano', 'solana'], refreshInterval = 60000) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [lastUpdate, setLastUpdate] = useState(null);
-  const [retryCount, setRetryCount] = useState(0);
-  const [connectionStatus, setConnectionStatus] = useState('connected');
+  const [connectionStatus, setConnectionStatus] = useState('disconnected');
 
   const fetchData = useCallback(async (isRetry = false) => {
     try {
@@ -17,19 +16,24 @@ export const useCoinPrices = (coinIds = ['bitcoin', 'ethereum', 'cardano', 'sola
       }
       setError(null);
       
-      console.log(`Fetching static market data for ${coinIds.length} coins...`);
-      const marketData = await getMarketData(coinIds);
-      const transformedData = marketData.map(transformCoinGeckoData);
+      console.log(`Fetching real-time data from CoinGecko for ${coinIds.length} coins...`);
       
-      setData(transformedData);
+      // Check connection first
+      const connectionCheck = await checkConnection();
+      if (connectionCheck.status === 'error') {
+        throw new Error(connectionCheck.message);
+      }
+      
+      const marketData = await getMarketData(coinIds);
+      
+      setData(marketData);
       setLastUpdate(new Date());
-      setRetryCount(0);
       setConnectionStatus('connected');
       
-      console.log(`Successfully loaded static data for ${transformedData.length} coins`);
+      console.log(`Successfully loaded CoinGecko data for ${marketData.length} coins`);
     } catch (err) {
-      console.error('Error in useCoinPrices:', err);
-      setError('Failed to load static data');
+      console.error('Error in useCoinGeckoData:', err);
+      setError(err.message || 'Failed to load real-time data');
       setConnectionStatus('error');
     } finally {
       setLoading(false);
@@ -38,168 +42,77 @@ export const useCoinPrices = (coinIds = ['bitcoin', 'ethereum', 'cardano', 'sola
 
   // Manual retry function
   const retry = useCallback(() => {
-    setRetryCount(0);
     fetchData(false);
   }, [fetchData]);
 
+  // Initial data fetch
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
-  // Set up refresh interval with static data updates
+  // Set up refresh interval
   useEffect(() => {
     if (refreshInterval > 0) {
       const interval = setInterval(() => {
-        fetchData();
+        fetchData(true);
       }, refreshInterval);
-      
+
       return () => clearInterval(interval);
     }
   }, [fetchData, refreshInterval]);
 
-  return { 
-    data, 
-    loading, 
-    error, 
-    lastUpdate, 
-    retryCount, 
-    connectionStatus, 
-    refetch: fetchData, 
-    retry 
+  return {
+    data,
+    loading,
+    error,
+    lastUpdate,
+    connectionStatus,
+    retry
   };
 };
 
-// Custom hook for fetching historical price data with static data
-export const useHistoricalPrices = (coinId, days = 7) => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [retryCount, setRetryCount] = useState(0);
-  const [connectionStatus, setConnectionStatus] = useState('connected');
-
-  const fetchData = useCallback(async (isRetry = false) => {
-    try {
-      if (!isRetry) {
-        setLoading(true);
-      }
-      setError(null);
-      
-      console.log(`Fetching static historical data for ${coinId} (${days} days)...`);
-      const historicalData = await getHistoricalPrices(coinId, days);
-      
-      // Transform data for chart component
-      const transformedData = historicalData.prices?.map(([timestamp, price], index) => ({
-        time: formatTimeLabel(timestamp, days, index),
-        price: price,
-        volume: historicalData.total_volumes?.[index]?.[1] || 0,
-        timestamp: timestamp
-      })) || [];
-      
-      setData(transformedData);
-      setRetryCount(0);
-      setConnectionStatus('connected');
-      
-      console.log(`Successfully loaded ${transformedData.length} static data points for ${coinId}`);
-    } catch (err) {
-      console.error(`Error fetching historical prices for ${coinId}:`, err);
-      setError('Failed to load static historical data');
-      setConnectionStatus('error');
-    } finally {
-      setLoading(false);
-    }
-  }, [coinId, days]);
-
-  // Manual retry function
-  const retry = useCallback(() => {
-    setRetryCount(0);
-    fetchData(false);
-  }, [fetchData]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  return { 
-    data, 
-    loading, 
-    error, 
-    retryCount, 
-    connectionStatus, 
-    refetch: fetchData, 
-    retry 
-  };
-};
-
-// Custom hook for global market data with static data
-export const useGlobalMarketData = () => {
+// Custom hook for global market data from CoinGecko
+export const useCoinGeckoGlobalData = (refreshInterval = 300000) => { // 5 minutes
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [retryCount, setRetryCount] = useState(0);
-  const [connectionStatus, setConnectionStatus] = useState('connected');
+  const [lastUpdate, setLastUpdate] = useState(null);
 
-  const fetchGlobalData = useCallback(async (isRetry = false) => {
+  const fetchGlobalData = useCallback(async () => {
     try {
-      if (!isRetry) {
-        setLoading(true);
-      }
+      setLoading(true);
       setError(null);
       
-      console.log('Fetching static global market data...');
       const globalData = await getGlobalMarketData();
-      setData(globalData.data);
-      setRetryCount(0);
-      setConnectionStatus('connected');
       
-      console.log('Successfully loaded static global market data');
+      setData(globalData);
+      setLastUpdate(new Date());
+      
+      console.log('Successfully loaded CoinGecko global market data');
     } catch (err) {
       console.error('Error fetching global market data:', err);
-      setError('Failed to load static global data');
-      setConnectionStatus('error');
+      setError(err.message || 'Failed to load global market data');
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Manual retry function
-  const retry = useCallback(() => {
-    setRetryCount(0);
-    fetchGlobalData(false);
+  useEffect(() => {
+    fetchGlobalData();
   }, [fetchGlobalData]);
 
   useEffect(() => {
-    fetchGlobalData();
-    
-    // Update global data every 5 minutes
-    const interval = setInterval(() => {
-      fetchGlobalData();
-    }, 300000);
-    
-    return () => clearInterval(interval);
-  }, [fetchGlobalData]);
+    if (refreshInterval > 0) {
+      const interval = setInterval(fetchGlobalData, refreshInterval);
+      return () => clearInterval(interval);
+    }
+  }, [fetchGlobalData, refreshInterval]);
 
-  return { 
-    data, 
-    loading, 
-    error, 
-    retryCount, 
-    connectionStatus, 
-    refetch: fetchGlobalData, 
-    retry 
+  return {
+    data,
+    loading,
+    error,
+    lastUpdate,
+    retry: fetchGlobalData
   };
 };
-
-// Helper function to format time labels for charts
-const formatTimeLabel = (timestamp, days, index) => {
-  const date = new Date(timestamp);
-  
-  if (days <= 1) {
-    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-  } else if (days <= 7) {
-    return date.toLocaleDateString('en-US', { weekday: 'short' });
-  } else {
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  }
-};
-
-export default { useCoinPrices, useHistoricalPrices, useGlobalMarketData };
