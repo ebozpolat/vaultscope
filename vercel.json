@@ -44,3 +44,4 @@
         }
     }
 }
+fix: remove invalid functions config in vercel.json
